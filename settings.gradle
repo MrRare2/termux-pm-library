@@ -6,5 +6,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "Termux am library"
-include ':termux-am-library'
+rootProject.name = "Termux pm library"
+include ':termux-pm-library'

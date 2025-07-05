@@ -16,7 +16,7 @@
 */
 
 
-package com.termux.am;
+package com.termux.pm;
 
 import android.app.Activity;
 import android.app.Application;
@@ -33,7 +33,7 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
 
-public class Am extends BaseCommand {
+public class Pm extends BaseCommand {
     
     private int mRepeat = 0;
     private String mReceiverPermission;
@@ -50,6 +50,7 @@ public class Am extends BaseCommand {
     @Override
     public void onShowUsage(PrintStream out) {
         PrintWriter pw = new PrintWriter(out);
+	/*
         pw.println(
                 "usage: am [subcommand] [options]\n" +
                 "usage: am start [-D] [-N] [-W] [-P <FILE>] [--start-profiler <FILE>]\n" +
@@ -98,7 +99,8 @@ public class Am extends BaseCommand {
                 "am to-app-uri: print the given Intent specification as an android-app: URI.\n" +
                 "\n"
         );
-        IntentCmd.printIntentArgsHelp(pw, "");
+        IntentCmd.printIntentArgsHelp(pw, "");*/
+	pw.println("pm help message stub\n");
         pw.flush();
     }
     
@@ -109,7 +111,7 @@ public class Am extends BaseCommand {
             case "start":
                 runStart();
                 break;
-            case "startservice":
+            /*case "startservice":
                 runStartService();
                 break;
             case "stopservice":
@@ -126,148 +128,15 @@ public class Am extends BaseCommand {
                 break;
             case "to-app-uri":
                 runToUri(Intent.URI_ANDROID_APP_SCHEME);
-                break;
+                break;*/
             default:
                 showError("Error: unknown command '" + op + "'");
                 break;
         }
     }
     
-    private Intent makeIntent() throws URISyntaxException {
-        mRepeat = 0;
-        
-        return IntentCmd.parseCommandArgs(mArgs, (opt, cmd) -> {
-            switch (opt) {
-                case "-W":
-                case "-P":
-                case "--stack":
-                case "--sampling":
-                case "--start-profiler":
-                case "-S":
-                    break;
-                case "-R":
-                    mRepeat = Integer.parseInt(nextArgRequired());
-                    break;
-                case "--user":
-                    nextArgRequired();
-                    break;
-                case "--receiver-permission":
-                    mReceiverPermission = nextArgRequired();
-                    break;
-                default:
-                    return false;
-            }
-            return true;
-        });
-    }
-    
-    private void runStartService() throws Exception {
-        Intent intent = makeIntent();
-        out.println("Starting service: " + intent);
-        ServiceInfo info;
-        try {
-            info = app.getPackageManager().getServiceInfo(intent.getComponent(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            err.println("Error: Not found; no service started.");
-            return;
-        }
-        
-        try {
-            app.startService(intent);
-        } catch (SecurityException e) {
-            if (info != null && info.permission != null && ! info.permission.equals("")) {
-                err.println("Error: Requires permission " + info.permission);
-            } else {
-                err.println("Could not start service");
-            }
-        } catch (IllegalArgumentException e) {
-            err.println("Could not start service");
-        }
-    }
-    
-    private void runStopService() throws Exception {
-        Intent intent = makeIntent();
-        out.println("Stopping service: " + intent);
-        ServiceInfo info;
-        try {
-            info = app.getPackageManager().getServiceInfo(intent.getComponent(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            err.println("Error: Not found; Service not stopped.");
-            return;
-        }
-        try {
-            app.stopService(intent);
-        } catch (SecurityException e) {
-            if (info != null && info.permission != null && ! info.permission.equals("")) {
-                err.println("Error: Requires permission " + info.permission);
-            } else {
-                err.println("Error stopping service");
-            }
-        } catch (IllegalArgumentException e) {
-            err.println("Error stopping service");
-        }
-    }
-    
     private void runStart() throws Exception {
-        Intent intent = makeIntent();
-        do {
-            out.println("Starting: " + intent);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            
-            try {
-                app.startActivity(intent);
-            } catch (ActivityNotFoundException e) {
-                out.println("Error: Activity class " +
-                        intent.getComponent().toShortString()
-                        + " does not exist.");
-            } catch (Exception e) {
-                err.println("Exception while starting Activity:");
-                e.printStackTrace(err);
-            }
-            mRepeat--;
-        } while (mRepeat > 1);
+	out.println("pm start stub\n");
     }
-    
-    
-    private void sendBroadcast() throws Exception {
-        Intent intent = makeIntent();
-        IntentReceiver receiver = new IntentReceiver();
-        
-        out.println("Broadcasting: " + intent);
-        app.sendOrderedBroadcast(intent, mReceiverPermission, receiver, new Handler(app.getMainLooper()), Activity.RESULT_OK, null, null);
-        
-        receiver.waitForFinish();
-    }
-    
-    
-    private void runToUri(int flags) throws Exception {
-        Intent intent = makeIntent();
-        out.println(intent.toUri(flags));
-    }
-    
-    
-    private class IntentReceiver extends BroadcastReceiver
-    {
-        private boolean mFinished = false;
-        
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String line = "Broadcast completed: result=" + getResultCode();
-            if (getResultData() != null) line = line + ", data=\"" + getResultData() + "\"";
-            if (getResultExtras(false) != null) line = line + ", extras: " + getResultExtras(false);
-            out.println(line);
-            synchronized (this) {
-              mFinished = true;
-              notifyAll();
-            }
-        }
-        
-        public synchronized void waitForFinish() {
-            try {
-                while (!mFinished) wait();
-            } catch (InterruptedException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-    }
+  }
 }

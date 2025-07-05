@@ -1,4 +1,4 @@
-package com.termux.am;
+package com.termux.pm;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -22,6 +22,7 @@ public class IntentCmd {
     /** @hide */
     public static Intent parseCommandArgs(ShellCommand cmd, CommandOptionHandler optionHandler)
             throws URISyntaxException {
+
         Intent intent = new Intent();
         Intent baseIntent = intent;
         boolean hasIntentInfo = false;
@@ -32,7 +33,8 @@ public class IntentCmd {
         String opt;
         while ((opt=cmd.getNextOption()) != null) {
             switch (opt) {
-                case "-a":
+		// TODO: this is a stub, no option is parsed yet
+                /*case "-a":
                     intent.setAction(cmd.getNextArgRequired());
                     if (intent == baseIntent) {
                         hasIntentInfo = true;
@@ -328,10 +330,10 @@ public class IntentCmd {
                     intent.addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND);
                     break;
                 */
-                case "--selector":
+                /*case "--selector":
                     intent.setDataAndType(data, type);
                     intent = new Intent();
-                    break;
+                    break; */
                 default:
                     if (optionHandler != null && optionHandler.handleOption(opt, cmd)) {
                         // Okay, caller handled this option.
