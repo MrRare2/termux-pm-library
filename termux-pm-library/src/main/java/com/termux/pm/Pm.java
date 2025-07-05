@@ -40,7 +40,7 @@ public class Pm extends BaseCommand {
     
     private final Application app;
     
-    public Am(PrintStream out, PrintStream err, Application app) {
+    public Pm(PrintStream out, PrintStream err, Application app) {
         super(out, err);
         if (app == null) throw new InvalidParameterException("app context can't be null");
         this.app = app;
