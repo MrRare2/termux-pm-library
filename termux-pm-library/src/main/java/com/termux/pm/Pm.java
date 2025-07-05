@@ -138,5 +138,4 @@ public class Pm extends BaseCommand {
     private void runStart() throws Exception {
 	out.println("pm start stub\n");
     }
-  }
 }
